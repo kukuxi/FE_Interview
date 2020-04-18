@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            background: #f00;
+        }
+        
+        .child {
+            height: 100px;
+            margin-top: 10px;
+            background: yellow;
+            margin-bottom: 20px;
+        }
+        
+        .child1 {
+            height: 100px;
+            margin-top: 10px;
+            background: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="container">
+        <article class="child"></article>
+        <article class="child1"></article>
+    </section>
+
+    <section class="margin" style="overflow: hidden">
+        <style>
+            .margin {
+                background: pink;
+            }
+            
+            .margin p {
+                margin: 5px auto 20px;
+                background: red;
+            }
+        </style>
+        <p>1</p>
+        <div style="overflow: hidden">
+            <p>2</p>
+        </div>
+        <p>3</p>
+    </section>
+
+    <!-- bfc不与float重叠 -->
+    <section class="layout">
+        <style>
+            .layout {
+                background: red;
+            }
+            
+            .left {
+                background: rosybrown;
+                height: 100px;
+                float: left;
+                width: 100px;
+            }
+            
+            .right {
+                background: royalblue;
+                height: 130px;
+                /* overflow: auto; 加上overflow就可以创建bfc，*/
+            }
+        </style>
+        <div class="left"></div>
+        <div class="right"></div>
+    </section>
+
+    <!-- bfc元素会将浮动元素参与到计算中 -->
+    <section style="overflow: auto;">
+        <div style="float: left;">
+            hello
+        </div>
+    </section>
+</body>
+
+</html>
