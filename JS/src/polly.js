@@ -37,3 +37,140 @@ function add(m) {
 
   return sum;
 }
+
+const ClassType = ["Array", "Regexp", "Error", "Date"].reduce((acc, cur) => {
+  acc[`[Object ${cur}]`] = cur.toLowerCase();
+  return acc;
+}, {});
+
+function type(obj) {
+  if (typeof obj == null) return String(obj);
+  return typeof obj === "object"
+    ? ClassType[Object.prototype.toString.call(obj)] || "object"
+    : typeof obj;
+}
+
+function debounce(fn, delay, immediate) {
+  let timer;
+
+  return function () {
+    const args = arguments,
+      context = this;
+    if (immediate && !timer) {
+      fn.apply(context, args);
+    }
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(context, args), delay);
+  };
+}
+
+function throttle(fn, wait, immediate) {
+  let timer,
+    callNow = immediate;
+
+  return function () {
+    const args = arguments,
+      context = this,
+    if (!callNow) {
+      fn.apply(context, args);
+      callNow = true;
+    }
+
+    if (!timer) {
+      setTimeout(() => {
+        fn.apply(context, args);
+      }, wait);
+    }
+  };
+}
+
+function throttle2(fn, wait) {
+  let timer,
+    pre = 0;
+
+  return function () {
+    const args = arguments,
+      context = this,
+      now = +new Date();
+
+    if (now - pre > wait) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      fn.apply(context, arg);
+      pre = now;
+    } else if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(context, arg);
+      }, wait);
+    }
+  };
+}
+
+Function.prototype.call2 = function (context) {
+  context = context || window;
+  context.fn = this;
+
+  let args = [];
+  for (let i = 1; i < arguments.length; i++) {
+    args.push(`arguments[${i}]`);
+  }
+
+  const result = eval(`context.fn(${args})`)
+  delete context.fn;
+  return result;
+}
+
+Function.prototype.apply2 = function (context, arr) {
+  context = context || window;
+  context.fn = this;
+
+  let result;
+  if (!arr) {
+    result = context.fn()
+  } else {
+    let arr = [];
+    for (let i = 1; i < arr.length; i++) {
+      arr.push(`arr[${i}]`);
+    }
+    result = eval(`context.fn(${args})`)
+  }
+  delete context.fn;
+  return result;
+}
+
+
+Function.prototype.bind = function (context) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  const self = this;
+  const fn = function () {
+    const bindArgs = Array.prototype.slice.call(arguments)
+    return self.apply(this instanceof self ? this : context, args.concat(bindArgs))
+  }
+
+  function F() {  }
+  F.prototype = this.prototype;
+  fn.prototype = new F();
+  return fn;
+}
+
+function throttle(fn, wait, immediate) {
+  let callNow = immediate;
+  let timer = null;
+  const context = this;
+  return function () {
+    const args = arguments;
+    if (!callNow) {
+      fn.apply(context, args);
+      callNow = true;
+    }
+
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(this, args)
+        timer = null;
+      }, wait)
+    }
+  }
+}
