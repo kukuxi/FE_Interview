@@ -69,3 +69,64 @@ function test(i) {
     }, 1000);
   });
 }
+
+function fetchPool(max, items, fn) {
+  let i = 0;
+  let result = [];
+  let excu = [];
+
+  const enqueue = () => {
+    if (i === items.length) {
+      return Promise.resolve();
+    }
+
+    const t = Promise.resolve().then(() => fn(items[i++]));
+    result.push(t);
+    const e = t.then(() => excu.splice(excu.indexOf(e), 1));
+    excu.push(e);
+
+    const r = Promise.resolve();
+    if (excu.length >= max) {
+      r = Promise.race(excu);
+    }
+
+    return r.then(() => enqueue());
+  };
+
+  return enqueue().then(() => result);
+}
+
+async function asyncPool(max, items, fn) {
+  let res = [],
+    excuting = [];
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const p = Promise.resolve.then(() => fn(item));
+    res.push(p);
+
+    const e = p.then(() => excuting.splice(excuting.indexOf(e), 1));
+    excuting.push(e);
+
+    if (excuting.length >= max) {
+      await Promise.race(excuting);
+    }
+  }
+
+  return Promise.all(res);
+}
+
+Promise.all = (items) => {
+  let result = [];
+  for (let i = 0; i < items.length; i++) {
+    const fn = items[i];
+    new Promise((res, rej) => {
+      res(fn);
+    }).then((value) => {
+      result.push(value);
+      if (result.length === items.length) {
+        return result;
+      }
+    });
+  }
+};
